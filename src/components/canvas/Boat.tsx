@@ -6,8 +6,11 @@ import { latLonToXZ, DEFAULT_ORIGIN } from '../../lib/coordinates';
 import { useBoatStore } from '../../stores/useBoatStore';
 import { useCourseStore } from '../../stores/useCourseStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-// import type { BoatData } from '../../stores/useBoatStore';
+import { getClosestGate } from '../../lib/dynamicGateLogic';
 
+import BoatTrail from './BoatTrail';
+
+// Define TEAM_COLORS here again or move if necessary, it was deleted too?
 const TEAM_COLORS: Record<string, string> = {
     blue: '#3b82f6',
     red: '#ef4444',
@@ -16,8 +19,6 @@ const TEAM_COLORS: Record<string, string> = {
     white: '#ffffff',
     green: '#22c55e',
 };
-
-import BoatTrail from './BoatTrail';
 
 export default function Boat({ id }: { id: string }) {
     const boatRef = useRef<THREE.Group>(null);
@@ -46,14 +47,7 @@ export default function Boat({ id }: { id: string }) {
             boatRef.current.position.z = THREE.MathUtils.lerp(boatRef.current.position.z, targetPos.z, delta * 5);
 
             // Rotation (Heading) - Convert degrees to radians
-            // Heading 0 = North (Negative Z in 3D?) - Need to calibrate. 
-            // Usually 0 deg = North. In 3D engine, -Z is forward often.
-            // Let's assume standard compass: 0=N, 90=E.
-            // In 3D: N = -Z, E = +X. 
-            // Rotation Y: 0 looks at +Z (South). So we need to rotate 180 deg?
-            // Actually let's just use negation for now.
             const targetRot = (data.heading * Math.PI) / 180;
-            // Smooth rotation is tricky with 360 wrap, just snap for now to avoid spinning
             boatRef.current.rotation.y = -targetRot;
         }
     });
@@ -77,6 +71,27 @@ export default function Boat({ id }: { id: string }) {
         if (targetId === 'Finish Line') {
             tLat = (course.finishLine[0].lat + course.finishLine[1].lat) / 2;
             tLon = (course.finishLine[0].lon + course.finishLine[1].lon) / 2;
+        } else if (targetId === 'GATE') {
+             // Dynamic Gate Selection
+             // Need to find 4S or 4P, whichever is closer
+             // Since Boat.tsx has access to boat data:
+             const currentPos = { lat: data.lat, lng: data.lon };
+             const marks = course.marks.map(m => ({
+                 id: m.id,
+                 name: m.label,
+                 pos: { lat: m.lat, lng: m.lon },
+                 radius: 24, // simplified
+                 role: m.type === 'gate' ? 'gate' : 'other'
+             }));
+
+             // Need to cast to Mark type roughly
+             const closest = getClosestGate(currentPos, marks as any[]);
+             if (closest) {
+                 tLat = closest.pos.lat;
+                 tLon = closest.pos.lng;
+             } else {
+                 return null;
+             }
         } else {
             const mark = course.marks.find(m => m.id === targetId);
             if (!mark) return null;
@@ -92,7 +107,7 @@ export default function Boat({ id }: { id: string }) {
             new THREE.Vector3(targetPos.x, 2, targetPos.z), // Boat (slightly raised)
             new THREE.Vector3(tPos.x, 2, tPos.z)           // Mark
         ];
-    }, [course, activeLegIndex, targetPos, DEFAULT_ORIGIN]);
+    }, [course, activeLegIndex, targetPos, DEFAULT_ORIGIN, data.lat, data.lon]);
 
     return (
         <>

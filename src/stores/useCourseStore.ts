@@ -71,7 +71,7 @@ export const useCourseStore = create<CourseStore>((set, get) => ({
         const sequence: string[] = [];
         const m1id = 'M1';
         const m1aid = 'M1A';
-        const gateId = 'G4S'; // Default to Starboard Gate (or logic to pick closest)
+        const gateId = 'GATE'; // Generic Gate Target
         
         for(let i=0; i<laps; i++) {
              sequence.push(m1id);
