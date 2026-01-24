@@ -4,6 +4,7 @@ interface SettingsState {
     // UI State
     showScoreboard: boolean;
     isSettingsOpen: boolean;
+    showRoomList: boolean; // New
 
     // General
     language: 'TH' | 'EN';
@@ -54,6 +55,7 @@ interface SettingsState {
     setScoreboard: (v: boolean) => void;
     toggleSettings: () => void;
     setSettings: (v: boolean) => void;
+    toggleRoomList: () => void; // New
     updateSetting: (key: keyof SettingsState, value: any) => void;
 }
 
@@ -61,6 +63,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     // Defaults matching user request/reasonable starts
     showScoreboard: false,
     isSettingsOpen: false,
+    showRoomList: false,
 
     language: 'TH',
     timeKeepingMode: 'elapsed',
@@ -105,5 +108,6 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     setScoreboard: (v) => set({ showScoreboard: v }),
     toggleSettings: () => set((state) => ({ isSettingsOpen: !state.isSettingsOpen })),
     setSettings: (v) => set({ isSettingsOpen: v }),
+    toggleRoomList: () => set((state) => ({ showRoomList: !state.showRoomList })),
     updateSetting: (key, value) => set((state) => ({ ...state, [key]: value })),
 }));

@@ -152,7 +152,7 @@ export default function CameraController() {
     useFrame((_state, delta) => {
         const glControls = controls as any;
         frameCounter.current += 1;
-        const shouldLog = frameCounter.current % 60 === 0;
+        // const shouldLog = frameCounter.current % 60 === 0;
 
         if (!glControls) return;
 

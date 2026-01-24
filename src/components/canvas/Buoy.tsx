@@ -24,7 +24,7 @@ export default function Buoy({ mark, isGate }: BuoyProps) {
 
     const ringRef = useRef<THREE.Mesh>(null);
 
-    useFrame((state, delta) => {
+    useFrame((_state, delta) => {
         if (ringRef.current) {
             ringRef.current.rotation.y += delta * 0.5; // Rotate
             // Optional: slight bobbing or scaling?

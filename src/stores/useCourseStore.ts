@@ -1,32 +1,97 @@
 import { create } from 'zustand';
-import type { CourseData } from '../lib/courseGenerator';
-import { generateCourse } from '../lib/courseGenerator';
+import type { CourseData, CoursePoint } from '../lib/courseGenerator'; // Keep for UI compat
+import type { RaceData, Mark } from '../lib/raceTypes';
+import { generateWindwardLeewardCourse } from '../lib/raceLogic';
 import { DEFAULT_ORIGIN } from '../lib/coordinates';
 
 interface CourseStore {
-    course: CourseData | null;
-    activeLegIndex: number; // Index of the current leg/mark we are heading towards
+    course: CourseData | null; // Legacy UI support
+    raceData: RaceData | null; // New Logical Structure
+    activeLegIndex: number;
     raceName: string | null;
-    generate: (windDir: number) => void;
-    setCourse: (course: CourseData) => void;
+    generate: (windDir: number) => void; // Legacy
+    generateRaceCourse: (windDir: number, laps?: number) => void; // New
+    setCourse: (course: CourseData | null) => void;
     setRaceName: (name: string) => void;
     nextLeg: () => void;
     prevLeg: () => void;
     setLeg: (index: number) => void;
 }
 
-export const useCourseStore = create<CourseStore>((set) => ({
+export const useCourseStore = create<CourseStore>((set, get) => ({
     course: null,
+    raceData: null,
     activeLegIndex: 0,
     raceName: null,
     /**
-     * Generates a new course based on wind direction
-     * Uses DEFAULT_ORIGIN as center (Sattahip Bay)
+     * Legacy generator
      */
     generate: (windDir: number) => {
-        // Generate around DEFAULT_ORIGIN for now
-        const courseData = generateCourse(DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon, windDir, 3000);
-        set({ course: courseData });
+        console.warn('Using new generateRaceCourse instead');
+        get().generateRaceCourse(windDir);
+    },
+    generateRaceCourse: (windDir: number, laps: number = 2) => {
+        const startPoint = { lat: DEFAULT_ORIGIN.lat, lng: DEFAULT_ORIGIN.lon };
+        const layout = generateWindwardLeewardCourse(startPoint, windDir);
+        
+        const raceData: RaceData = {
+            course_layout: layout,
+            race_config: { laps, total_legs: laps * 2 } // Approximation
+        };
+
+        // Mapper to adapt RaceData -> CourseData (for UI)
+        const mapMarkToCoursePoint = (m: Mark, color: string, type: CoursePoint['type']): CoursePoint => ({
+            id: m.id,
+            label: m.name,
+            lat: m.pos.lat,
+            lon: m.pos.lng,
+            type: type,
+            color: color
+        });
+
+        const marks: CoursePoint[] = layout.marks.map(m => {
+            let color = 'yellow';
+            let type: CoursePoint['type'] = 'mark';
+            if (m.role === 'gate') { color = 'green'; type = 'gate'; }
+            if (m.role === 'mark1a') { color = 'orange'; }
+            return mapMarkToCoursePoint(m, color, type);
+        });
+
+        const startLine: [CoursePoint, CoursePoint] = [
+            { ...mapMarkToCoursePoint({ id: 'S1', name: 'Start Pin', pos: layout.start_line.p1, radius: 0 } as Mark, 'orange', 'pin'), label: 'Pin' },
+            { ...mapMarkToCoursePoint({ id: 'S2', name: 'Start Boat', pos: layout.start_line.p2, radius: 0 } as Mark, 'green', 'boat'), label: 'Boat' }
+        ];
+
+        const finishLine: [CoursePoint, CoursePoint] = [
+            { ...mapMarkToCoursePoint({ id: 'F1', name: 'Finish Pin', pos: layout.finish_line.p1, radius: 0 } as Mark, 'blue', 'pin'), label: 'Pin' },
+            { ...mapMarkToCoursePoint({ id: 'F2', name: 'Finish Boat', pos: layout.finish_line.p2, radius: 0 } as Mark, 'blue', 'boat'), label: 'Boat' }
+        ];
+
+        // Generate Sequence: Start -> M1 -> M1A -> Gate -> (repeat) -> Finish
+        const sequence: string[] = [];
+        const m1id = 'M1';
+        const m1aid = 'M1A';
+        const gateId = 'G4S'; // Default to Starboard Gate (or logic to pick closest)
+        
+        for(let i=0; i<laps; i++) {
+             sequence.push(m1id);
+             sequence.push(m1aid);
+             if (i < laps - 1) {
+                 sequence.push(gateId); 
+             } else {
+                 // Last Lap -> Finish
+                 sequence.push('Finish Line');
+             }
+        }
+
+        const courseData: CourseData = {
+            startLine,
+            finishLine,
+            marks,
+            sequence
+        };
+
+        set({ raceData, course: courseData, activeLegIndex: 0 });
     },
     setCourse: (course) => set({ course }),
     setRaceName: (name) => set({ raceName: name }),

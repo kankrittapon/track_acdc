@@ -25,3 +25,12 @@ dist-ssr
 
 # Environment Variables
 .env
+.env.*
+!.env.example
+
+# OS Custom
+Thumbs.db
+Desktop.ini
+
+# Project Data
+yrat-livekit-default-rtdb-export.json

@@ -30,8 +30,14 @@ export default function DataController() {
     // 2. Fetch Active Race/Room Info
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const roomIdParam = params.get('room');
+        const isTestMode = params.get('test') === 'true';
+        
+        // In Test Mode, we don't sync Rooms from Firebase
+        if (isTestMode) return;
 
+        // const rootPath = ''; // Always production in live mode, test mode is offline
+        
+        const roomIdParam = params.get('room');
         const setRaceName = useCourseStore.getState().setRaceName;
 
         let roomsRef;
@@ -68,8 +74,13 @@ export default function DataController() {
 
     // 1. Fetch Boat Telemetry (Devices) & Dynamic Course
     useEffect(() => {
-        const devicesRef = ref(database, 'devices');
         const params = new URLSearchParams(window.location.search);
+        const isTestMode = params.get('test') === 'true';
+
+        // In Test Mode, we don't sync Devices from Firebase
+        if (isTestMode) return;
+
+        const devicesRef = ref(database, 'devices');
         const roomIdParam = params.get('room');
 
         const unsubscribe = onValue(devicesRef, (snapshot) => {

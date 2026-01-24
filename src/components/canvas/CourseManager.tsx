@@ -1,15 +1,9 @@
-import { useMemo } from 'react';
 import { useCourseStore } from '../../stores/useCourseStore';
-import { useSettingsStore } from '../../stores/useSettingsStore';
 import Buoy from './Buoy';
-import { Line, Html } from '@react-three/drei';
-import { latLonToXZ, DEFAULT_ORIGIN, calculateBearing, haversineDistance } from '../../lib/coordinates';
-import * as THREE from 'three';
-import type { CoursePoint } from '../../lib/courseGenerator';
+
 
 export default function CourseManager() {
     const { course, activeLegIndex } = useCourseStore();
-    const startArea = useSettingsStore(s => s.startArea);
 
     if (!course) return null;
     const showStart = activeLegIndex === 0;
@@ -17,30 +11,11 @@ export default function CourseManager() {
     return (
         <group>
             {/* Start Line */}
-            {startArea && showStart && <CourseLine points={course.startLine} color="#22c55e" />}
-            {showStart && <StartCenterLine startLine={course.startLine} marks={course.marks} />}
             {showStart && course.startLine.map(p => <Buoy key={p.id} mark={p} />)}
 
             {/* Finish Line */}
-            {startArea && <CourseLine points={course.finishLine} color="#3b82f6" />}
             {course.finishLine.map(p => <Buoy key={p.id} mark={p} />)}
-
-            {/* Semi-Finish Line */}
-            {course.semiFinishLine && (
-                <>
-                    <CourseLine points={course.semiFinishLine} color="purple" />
-                    {course.semiFinishLine.map(p => <Buoy key={p.id} mark={p} />)}
-                </>
-            )}
-
-            {/* Mark 1 Arms (Red Laylines) */}
-            {course.marks.length > 0 && (
-                <Mark1Arms mark1={course.marks[0]} startPin={course.startLine[0]} />
-            )}
-
-            {/* Gate Connecting Lines - REMOVED per user request */}
-            {/* <GateLines marks={course.marks} /> */}
-
+            
             {/* Marks - Progressive Hiding */}
             {course.marks.map((mark, index) => {
                 // Show mark if it's the current target OR the immediately previous one
@@ -51,48 +26,54 @@ export default function CourseManager() {
                 return isVisible && <Buoy key={mark.id} mark={mark} isGate={isGate} />;
             })}
 
-            {/* Course Path (Active Legs) */}
-            <CourseLegs course={course} activeIdx={activeLegIndex} />
+            {/* Course Path (Active Legs) - Removed */}
+            {/* <CourseLegs course={course} activeIdx={activeLegIndex} /> */}
         </group>
     );
 }
 
-function Mark1Arms({ mark1, startPin }: { mark1: CoursePoint, startPin: CoursePoint }) {
-    const linePoints = useMemo(() => {
-        const pM1 = latLonToXZ(mark1.lat, mark1.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
-        const pStart = latLonToXZ(startPin.lat, startPin.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+/*
+function GateLines({ marks }: { marks: CoursePoint[] }) {
+    const lines = useMemo(() => {
+        const segments: THREE.Vector3[][] = [];
+        
+        for (let i = 0; i < marks.length - 1; i++) {
+            const m1 = marks[i];
+            const m2 = marks[i + 1];
 
-        const center = new THREE.Vector3(pM1.x, 2, pM1.z);
-        const start = new THREE.Vector3(pStart.x, 2, pStart.z);
-
-        // Calculate direction from Start to Mark 1 to determine "downwind"
-        // Upwind is Start -> Mark 1
-        const upwindDir = new THREE.Vector3().subVectors(center, start).normalize();
-
-        // Arm length (checking user image: quite long, maybe 1km or relative to leg)
-        const ARM_LENGTH = 1500;
-
-        // Rotate -45 and +45 degrees relative to downwind direction
-        // Downwind direction is roughly opposite of upwind
-        const downwindDir = upwindDir.clone().negate();
-
-        // Angle calculations for visual arms (roughly 45 deg, customizable)
-        const armLeftDir = downwindDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(-45));
-        const armRightDir = downwindDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(45));
-
-        const armLeftEnd = center.clone().add(armLeftDir.multiplyScalar(ARM_LENGTH));
-        const armRightEnd = center.clone().add(armRightDir.multiplyScalar(ARM_LENGTH));
-
-        return {
-            left: [center, armLeftEnd],
-            right: [center, armRightEnd]
-        };
-    }, [mark1, startPin]);
+            // Check if both are gates
+            // Logic: adjacent gates are treated as a pair (e.g. 3S -> 3P)
+            if (m1.type === 'gate' && m2.type === 'gate') {
+                 const p1 = latLonToXZ(m1.lat, m1.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+                 const p2 = latLonToXZ(m2.lat, m2.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+                 
+                 segments.push([
+                     new THREE.Vector3(p1.x, 2, p1.z), // Raised slightly
+                     new THREE.Vector3(p2.x, 2, p2.z)
+                 ]);
+                 
+                 // Skip next mark to prevent chaining if multiple gate pairs existed
+                 i++; 
+            }
+        }
+        return segments;
+    }, [marks]);
 
     return (
         <>
-            <Line points={linePoints.left} color="red" lineWidth={1} dashed dashScale={10} gapSize={5} opacity={0.5} transparent />
-            <Line points={linePoints.right} color="red" lineWidth={1} dashed dashScale={10} gapSize={5} opacity={0.5} transparent />
+            {lines.map((segment, idx) => (
+                 <Line
+                    key={idx}
+                    points={segment}
+                    color="#22c55e" // Green for gates (standard?) or white
+                    lineWidth={2}
+                    dashed
+                    dashScale={2}
+                    gapSize={1}
+                    opacity={0.6}
+                    transparent
+                />
+            ))}
         </>
     );
 }
@@ -260,7 +241,6 @@ function StartCenterLine({ startLine, marks }: { startLine: [CoursePoint, Course
 
     return (
         <group>
-            {/* The Dashed Line */}
             <Line
                 points={linePoints}
                 color="white"
@@ -271,7 +251,6 @@ function StartCenterLine({ startLine, marks }: { startLine: [CoursePoint, Course
                 opacity={0.5}
                 transparent
             />
-            {/* The Text Label */}
             <Html position={textPos} center>
                 <div className="bg-slate-900/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap border border-slate-600 shadow-sm pointer-events-none transform -rotate-45" style={{ fontSize: '10px' }}>
                     <span className="font-bold text-yellow-400">{Math.round(bearing)}°</span>
@@ -282,5 +261,6 @@ function StartCenterLine({ startLine, marks }: { startLine: [CoursePoint, Course
         </group>
     );
 }
+*/
 
 // GateLines removed as per request (replaced by Buoy rings)

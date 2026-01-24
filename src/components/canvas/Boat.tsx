@@ -4,8 +4,9 @@ import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { latLonToXZ, DEFAULT_ORIGIN } from '../../lib/coordinates';
 import { useBoatStore } from '../../stores/useBoatStore';
+import { useCourseStore } from '../../stores/useCourseStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import type { BoatData } from '../../stores/useBoatStore';
+// import type { BoatData } from '../../stores/useBoatStore';
 
 const TEAM_COLORS: Record<string, string> = {
     blue: '#3b82f6',
@@ -18,9 +19,13 @@ const TEAM_COLORS: Record<string, string> = {
 
 import BoatTrail from './BoatTrail';
 
-export default function Boat({ data }: { data: BoatData }) {
+export default function Boat({ id }: { id: string }) {
     const boatRef = useRef<THREE.Group>(null);
     const { selectedBoatId, setSelectedBoat } = useBoatStore();
+    const data = useBoatStore((s) => s.boats[id]);
+
+    // Safety check if boat is removed
+    if (!data) return null;
 
     // Settings
     const iconSize = useSettingsStore(s => s.iconSize);
@@ -60,6 +65,34 @@ export default function Boat({ data }: { data: BoatData }) {
     useEffect(() => {
         document.body.style.cursor = hovered ? 'pointer' : 'auto';
     }, [hovered]);
+
+    // Target Line Logic
+    const { course, activeLegIndex } = useCourseStore();
+    const targetLinePoints = useMemo(() => {
+        if (!course || !course.sequence || activeLegIndex >= course.sequence.length) return null;
+
+        const targetId = course.sequence[activeLegIndex];
+        let tLat = 0, tLon = 0;
+
+        if (targetId === 'Finish Line') {
+            tLat = (course.finishLine[0].lat + course.finishLine[1].lat) / 2;
+            tLon = (course.finishLine[0].lon + course.finishLine[1].lon) / 2;
+        } else {
+            const mark = course.marks.find(m => m.id === targetId);
+            if (!mark) return null;
+            tLat = mark.lat;
+            tLon = mark.lon;
+        }
+
+        const tPos = latLonToXZ(tLat, tLon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+        
+        // Start: Boat Position (targetPos is already computed above as XZ)
+        // End: Mark Position
+        return [
+            new THREE.Vector3(targetPos.x, 2, targetPos.z), // Boat (slightly raised)
+            new THREE.Vector3(tPos.x, 2, tPos.z)           // Mark
+        ];
+    }, [course, activeLegIndex, targetPos, DEFAULT_ORIGIN]);
 
     return (
         <>
@@ -125,7 +158,7 @@ export default function Boat({ data }: { data: BoatData }) {
                     </mesh>
                     {/* Jib Sail (Small front) */}
                     <mesh position={[0, 2.5, -1.8]} rotation={[0.2, 0, 0]}>
-                        <boxGeometry args={[0.02, 3, 1.5]} />
+                        <boxGeometry args={[0.015, 3, 1.5]} />
                         <meshStandardMaterial color="#e2e8f0" />
                     </mesh>
                 </group>
@@ -161,7 +194,29 @@ export default function Boat({ data }: { data: BoatData }) {
                     </div>
                 </Html>
             </group>
+            
+            {/* Target Line - Only for selected boat to avoid clutter, or all? User implies for 'this boat'. Let's show for Selected only for now to be clean, or all if sailing details on? */}
+            {/* User said "Focus on dashed line between boat and buoy to tell where this boat is heading". Usually all boats. */}
+            {targetLinePoints && (
+                <BoatTargetLine points={targetLinePoints} color={TEAM_COLORS[data.team] || 'white'} />
+            )}
+            
             <BoatTrail target={boatRef as React.RefObject<THREE.Group>} />
         </>
+    );
+}
+
+function BoatTargetLine({ points, color }: { points: THREE.Vector3[], color: string }) {
+    return (
+         <primitive object={new THREE.Line(
+             new THREE.BufferGeometry().setFromPoints(points),
+             new THREE.LineDashedMaterial({ 
+                 color: color, 
+                 dashSize: 10, 
+                 gapSize: 5, 
+                 opacity: 0.4, 
+                 transparent: true 
+             })
+         )} />
     );
 }

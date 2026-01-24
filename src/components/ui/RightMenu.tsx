@@ -9,7 +9,8 @@ import {
     Video, // Auto View?
     Settings,
     History,
-    Navigation // For Wind Widget
+    Navigation,
+    FolderOpen // New
 } from 'lucide-react';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useBoatStore } from '../../stores/useBoatStore';
@@ -105,6 +106,8 @@ export default function RightMenu() {
                 setFollowingBoat(null);
                 window.dispatchEvent(new CustomEvent('camera-reset'));
             }} />
+
+            <Btn icon={FolderOpen} label="เลือกห้อง" onClick={useSettingsStore.getState().toggleRoomList} />
 
             <Btn
                 icon={History}

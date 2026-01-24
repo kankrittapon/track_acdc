@@ -11,12 +11,14 @@ import { useTestStore } from '../../stores/useTestStore';
 
 
 
+import { useShallow } from 'zustand/react/shallow';
+
 function BoatsRenderer() {
-    const boats = useBoatStore((state) => state.boats);
+    const boatIds = useBoatStore(useShallow((state) => Object.keys(state.boats)));
     return (
         <Suspense fallback={null}>
-            {Object.values(boats).map((boat) => (
-                <Boat key={boat.id} data={boat} />
+            {boatIds.map((id) => (
+                <Boat key={id} id={id} />
             ))}
         </Suspense>
     );
