@@ -25,8 +25,9 @@ export default function Boat({ id }: { id: string }) {
     const { selectedBoatId, setSelectedBoat } = useBoatStore();
     const data = useBoatStore((s) => s.boats[id]);
 
-    // Safety check if boat is removed
-    if (!data) return null;
+    // Safety check if boat is removed - BUT we must call hooks first!
+    // const data = useBoatStore((s) => s.boats[id]); 
+    // ^ definition moved to top, but usage below must be safe
 
     // Settings
     const iconSize = useSettingsStore(s => s.iconSize);
@@ -34,27 +35,30 @@ export default function Boat({ id }: { id: string }) {
     const showFlag = useSettingsStore(s => s.showFlag);
     const showSailingDetails = useSettingsStore(s => s.showSailingDetails);
 
+    // State
+    const [hovered, setHover] = useState(false);
+
     // Calculate target position from Lat/Lon
     const targetPos = useMemo(() => {
+        if (!data) return new THREE.Vector3(0, 0, 0);
         return latLonToXZ(data.lat, data.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
-    }, [data.lat, data.lon]);
+    }, [data?.lat, data?.lon]);
 
     // Interpolate position and rotation for smoothness
     useFrame((_state, delta) => {
-        if (boatRef.current) {
-            // Position Lerp
-            boatRef.current.position.x = THREE.MathUtils.lerp(boatRef.current.position.x, targetPos.x, delta * 5);
-            boatRef.current.position.z = THREE.MathUtils.lerp(boatRef.current.position.z, targetPos.z, delta * 5);
+        // If no data, do nothing
+        if (!data || !boatRef.current) return;
 
-            // Rotation (Heading) - Convert degrees to radians
-            const targetRot = (data.heading * Math.PI) / 180;
-            boatRef.current.rotation.y = -targetRot;
-        }
+        // Position Lerp
+        boatRef.current.position.x = THREE.MathUtils.lerp(boatRef.current.position.x, targetPos.x, delta * 5);
+        boatRef.current.position.z = THREE.MathUtils.lerp(boatRef.current.position.z, targetPos.z, delta * 5);
+
+        // Rotation (Heading) - Convert degrees to radians
+        const targetRot = (data.heading * Math.PI) / 180;
+        boatRef.current.rotation.y = -targetRot;
     });
 
-    const isSelected = selectedBoatId === data.id;
-
-    const [hovered, setHover] = useState(false);
+    const isSelected = data ? selectedBoatId === data.id : false;
 
     useEffect(() => {
         document.body.style.cursor = hovered ? 'pointer' : 'auto';
@@ -63,7 +67,7 @@ export default function Boat({ id }: { id: string }) {
     // Target Line Logic
     const { course, activeLegIndex } = useCourseStore();
     const targetLinePoints = useMemo(() => {
-        if (!course || !course.sequence || activeLegIndex >= course.sequence.length) return null;
+        if (!data || !course || !course.sequence || activeLegIndex >= course.sequence.length) return null;
 
         const targetId = course.sequence[activeLegIndex];
         let tLat = 0, tLon = 0;
@@ -72,26 +76,26 @@ export default function Boat({ id }: { id: string }) {
             tLat = (course.finishLine[0].lat + course.finishLine[1].lat) / 2;
             tLon = (course.finishLine[0].lon + course.finishLine[1].lon) / 2;
         } else if (targetId === 'GATE') {
-             // Dynamic Gate Selection
-             // Need to find 4S or 4P, whichever is closer
-             // Since Boat.tsx has access to boat data:
-             const currentPos = { lat: data.lat, lng: data.lon };
-             const marks = course.marks.map(m => ({
-                 id: m.id,
-                 name: m.label,
-                 pos: { lat: m.lat, lng: m.lon },
-                 radius: 24, // simplified
-                 role: m.type === 'gate' ? 'gate' : 'other'
-             }));
+            // Dynamic Gate Selection
+            // Need to find 4S or 4P, whichever is closer
+            // Since Boat.tsx has access to boat data:
+            const currentPos = { lat: data.lat, lng: data.lon };
+            const marks = course.marks.map(m => ({
+                id: m.id,
+                name: m.label,
+                pos: { lat: m.lat, lng: m.lon },
+                radius: 24, // simplified
+                role: m.type === 'gate' ? 'gate' : 'other'
+            }));
 
-             // Need to cast to Mark type roughly
-             const closest = getClosestGate(currentPos, marks as any[]);
-             if (closest) {
-                 tLat = closest.pos.lat;
-                 tLon = closest.pos.lng;
-             } else {
-                 return null;
-             }
+            // Need to cast to Mark type roughly
+            const closest = getClosestGate(currentPos, marks as any[]);
+            if (closest) {
+                tLat = closest.pos.lat;
+                tLon = closest.pos.lng;
+            } else {
+                return null;
+            }
         } else {
             const mark = course.marks.find(m => m.id === targetId);
             if (!mark) return null;
@@ -100,14 +104,17 @@ export default function Boat({ id }: { id: string }) {
         }
 
         const tPos = latLonToXZ(tLat, tLon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
-        
+
         // Start: Boat Position (targetPos is already computed above as XZ)
         // End: Mark Position
         return [
             new THREE.Vector3(targetPos.x, 2, targetPos.z), // Boat (slightly raised)
             new THREE.Vector3(tPos.x, 2, tPos.z)           // Mark
         ];
-    }, [course, activeLegIndex, targetPos, DEFAULT_ORIGIN, data.lat, data.lon]);
+    }, [course, activeLegIndex, targetPos, DEFAULT_ORIGIN, data?.lat, data?.lon]);
+
+    // Final safety check before render
+    if (!data) return null;
 
     return (
         <>
@@ -209,13 +216,13 @@ export default function Boat({ id }: { id: string }) {
                     </div>
                 </Html>
             </group>
-            
+
             {/* Target Line - Only for selected boat to avoid clutter, or all? User implies for 'this boat'. Let's show for Selected only for now to be clean, or all if sailing details on? */}
             {/* User said "Focus on dashed line between boat and buoy to tell where this boat is heading". Usually all boats. */}
             {targetLinePoints && (
                 <BoatTargetLine points={targetLinePoints} color={TEAM_COLORS[data.team] || 'white'} />
             )}
-            
+
             <BoatTrail target={boatRef as React.RefObject<THREE.Group>} />
         </>
     );
@@ -223,15 +230,15 @@ export default function Boat({ id }: { id: string }) {
 
 function BoatTargetLine({ points, color }: { points: THREE.Vector3[], color: string }) {
     return (
-         <primitive object={new THREE.Line(
-             new THREE.BufferGeometry().setFromPoints(points),
-             new THREE.LineDashedMaterial({ 
-                 color: color, 
-                 dashSize: 10, 
-                 gapSize: 5, 
-                 opacity: 0.4, 
-                 transparent: true 
-             })
-         )} />
+        <primitive object={new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(points),
+            new THREE.LineDashedMaterial({
+                color: color,
+                dashSize: 10,
+                gapSize: 5,
+                opacity: 0.4,
+                transparent: true
+            })
+        )} />
     );
 }

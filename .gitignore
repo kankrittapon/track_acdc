@@ -34,3 +34,6 @@ Desktop.ini
 
 # Project Data
 yrat-livekit-default-rtdb-export.json
+
+# Temporary Logs
+lint_*.txt

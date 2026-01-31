@@ -1,10 +1,10 @@
-import Scene from './components/canvas/Scene';
+import { useEffect } from 'react';
+import Map2D from './components/map/Map2D';
 import Sidebar from './components/ui/Sidebar';
 import RightMenu from './components/ui/RightMenu';
 import SettingsModal from './components/ui/SettingsModal';
 import ReplayControl from './components/ui/ReplayControl';
 import RoomListModal from './components/ui/RoomListModal';
-// import SimulationController from './components/SimulationController'; // REMOVED
 import DataController from './components/DataController';
 import TestOverlay from './components/TestOverlay';
 import { useSettingsStore } from './stores/useSettingsStore';
@@ -13,8 +13,18 @@ import RaceControlBoard from './components/ui/RaceControlBoard';
 
 import PlaybackDriver from './components/logic/PlaybackDriver';
 
+
 function App() {
   const showScoreboard = useSettingsStore((s) => s.showScoreboard);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const roomParam = params.get('room');
+    if (!roomParam) {
+      // If no room is selected (Dashboard mode), ensure the room list is open
+      useSettingsStore.setState({ showRoomList: true });
+    }
+  }, []);
 
   return (
     <div className="w-full h-screen bg-slate-900 overflow-hidden relative">
@@ -25,7 +35,7 @@ function App() {
 
       {/* 3D Scene (Includes Canvas) */}
       <div className="absolute inset-0 z-0">
-        <Scene />
+        <Map2D />
       </div>
 
       {/* UI Layer (Z-Index > 0) */}

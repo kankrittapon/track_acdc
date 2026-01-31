@@ -73,7 +73,7 @@ export function calculateBearing(start: LatLon, dest: LatLon): number {
     const x = Math.cos(startLat) * Math.sin(destLat) -
         Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLon - startLon);
 
-    let brng = toDeg(Math.atan2(y, x));
+    const brng = toDeg(Math.atan2(y, x));
     return (brng + 360) % 360;
 }
 

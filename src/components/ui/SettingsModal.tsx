@@ -19,7 +19,12 @@ export default function SettingsModal() {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     // Helpers
-    const Toggle = ({ label, value, onChange }: any) => (
+    interface ToggleProps {
+        label: string;
+        value: boolean;
+        onChange: (value: boolean) => void;
+    }
+    const Toggle = ({ label, value, onChange }: ToggleProps) => (
         <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
             <span className="text-sm font-medium text-slate-700">{label}</span>
             <button
@@ -31,7 +36,16 @@ export default function SettingsModal() {
         </div>
     );
 
-    const Slider = ({ label, value, onChange, min = 0, max = 10, step = 1, unit = '' }: any) => (
+    interface SliderProps {
+        label: string;
+        value: number;
+        onChange: (value: number) => void;
+        min?: number;
+        max?: number;
+        step?: number;
+        unit?: string;
+    }
+    const Slider = ({ label, value, onChange, min = 0, max = 10, step = 1, unit = '' }: SliderProps) => (
         <div className="py-3 border-b border-slate-100 last:border-0">
             <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium text-slate-700">{label}</span>
@@ -45,7 +59,13 @@ export default function SettingsModal() {
         </div>
     );
 
-    const Select = ({ label, value, onChange, options }: any) => (
+    interface SelectProps {
+        label: string;
+        value: string;
+        onChange: (value: string) => void;
+        options: { value: string; label: string }[];
+    }
+    const Select = ({ label, value, onChange, options }: SelectProps) => (
         <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
             <span className="text-sm font-medium text-slate-700">{label}</span>
             <select
@@ -53,7 +73,7 @@ export default function SettingsModal() {
                 onChange={(e) => onChange(e.target.value)}
                 className="text-sm border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white py-1"
             >
-                {options.map((opt: any) => (
+                {options.map((opt) => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
             </select>
@@ -128,11 +148,11 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Configuration</h4>
-                                                            <Select label="ภาษา (Language)" value={settings.language} onChange={(v: any) => updateSetting('language', v)}
+                                                            <Select label="ภาษา (Language)" value={settings.language} onChange={(v) => updateSetting('language', v)}
                                                                 options={[{ value: 'TH', label: 'ไทย' }, { value: 'EN', label: 'English' }]} />
-                                                            <Select label="รูปแบบเวลา (Time Keeping)" value={settings.timeKeepingMode} onChange={(v: any) => updateSetting('timeKeepingMode', v)}
+                                                            <Select label="รูปแบบเวลา (Time Keeping)" value={settings.timeKeepingMode} onChange={(v) => updateSetting('timeKeepingMode', v)}
                                                                 options={[{ value: 'elapsed', label: 'จับเวลาเดินหน้า (Elapsed)' }, { value: 'countdown', label: 'นับถอยหลัง (Countdown)' }]} />
-                                                            <Toggle label="เล่นซ้ำวนลูป (Loop Playback)" value={settings.loopPlayback} onChange={(v: any) => updateSetting('loopPlayback', v)} />
+                                                            <Toggle label="เล่นซ้ำวนลูป (Loop Playback)" value={settings.loopPlayback} onChange={(v) => updateSetting('loopPlayback', v)} />
                                                         </div>
                                                     </Tab.Panel>
 
@@ -140,9 +160,9 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Map Setting</h4>
-                                                            <Toggle label="ซูมนุ่มนวล (Smooth Zoom)" value={settings.smoothZoom} onChange={(v: any) => updateSetting('smoothZoom', v)} />
-                                                            <Toggle label="กลับสี (Color Invert)" value={settings.colorInvert} onChange={(v: any) => updateSetting('colorInvert', v)} />
-                                                            <Toggle label="แสดงชื่อสถานที่ (Show Place Names)" value={settings.showPlaceNames} onChange={(v: any) => updateSetting('showPlaceNames', v)} />
+                                                            <Toggle label="ซูมนุ่มนวล (Smooth Zoom)" value={settings.smoothZoom} onChange={(v) => updateSetting('smoothZoom', v)} />
+                                                            <Toggle label="กลับสี (Color Invert)" value={settings.colorInvert} onChange={(v) => updateSetting('colorInvert', v)} />
+                                                            <Toggle label="แสดงชื่อสถานที่ (Show Place Names)" value={settings.showPlaceNames} onChange={(v) => updateSetting('showPlaceNames', v)} />
                                                         </div>
                                                     </Tab.Panel>
 
@@ -150,20 +170,20 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Race Setting</h4>
-                                                            <Toggle label="เซ็นเซอร์ลม (Wind Sensors)" value={settings.showWindSensors} onChange={(v: any) => updateSetting('showWindSensors', v)} />
-                                                            <Toggle label="ผู้เข้าแข่งขัน (Competitors)" value={settings.showCompetitors} onChange={(v: any) => updateSetting('showCompetitors', v)} />
-                                                            <Slider label="ทิศทางลม (Wind Direction)" value={settings.windDirection} onChange={(v: any) => updateSetting('windDirection', v)} min={0} max={360} unit="°" />
+                                                            <Toggle label="เซ็นเซอร์ลม (Wind Sensors)" value={settings.showWindSensors} onChange={(v) => updateSetting('showWindSensors', v)} />
+                                                            <Toggle label="ผู้เข้าแข่งขัน (Competitors)" value={settings.showCompetitors} onChange={(v) => updateSetting('showCompetitors', v)} />
+                                                            <Slider label="ทิศทางลม (Wind Direction)" value={settings.windDirection} onChange={(v) => updateSetting('windDirection', v)} min={0} max={360} unit="°" />
 
                                                             <div className="h-px bg-slate-200 my-2" />
 
-                                                            <Slider label="Layline Angle" value={settings.laylineAngle} onChange={(v: any) => updateSetting('laylineAngle', v)} min={30} max={60} unit="°" />
-                                                            <Toggle label="Layline" value={settings.showLaylines} onChange={(v: any) => updateSetting('showLaylines', v)} />
+                                                            <Slider label="Layline Angle" value={settings.laylineAngle} onChange={(v) => updateSetting('laylineAngle', v)} min={30} max={60} unit="°" />
+                                                            <Toggle label="Layline" value={settings.showLaylines} onChange={(v) => updateSetting('showLaylines', v)} />
 
                                                             <div className="h-px bg-slate-200 my-2" />
 
-                                                            <Toggle label="Leading Line" value={settings.showLeadingLine} onChange={(v: any) => updateSetting('showLeadingLine', v)} />
-                                                            <Toggle label="Leader Line Arc" value={settings.showLeaderLineArc} onChange={(v: any) => updateSetting('showLeaderLineArc', v)} />
-                                                            <Toggle label="Ladder Line" value={settings.showLadderLine} onChange={(v: any) => updateSetting('showLadderLine', v)} />
+                                                            <Toggle label="Leading Line" value={settings.showLeadingLine} onChange={(v) => updateSetting('showLeadingLine', v)} />
+                                                            <Toggle label="Leader Line Arc" value={settings.showLeaderLineArc} onChange={(v) => updateSetting('showLeaderLineArc', v)} />
+                                                            <Toggle label="Ladder Line" value={settings.showLadderLine} onChange={(v) => updateSetting('showLadderLine', v)} />
 
                                                             <div className="h-px bg-slate-200 my-2" />
                                                             <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
@@ -193,16 +213,16 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Icon Setting</h4>
-                                                            <Toggle label="ชื่อทีม (Team Name)" value={settings.showTeamName} onChange={(v: any) => updateSetting('showTeamName', v)} />
-                                                            <Toggle label="แสดงเฉพาะเลขใบ (Only Sail Number)" value={settings.onlySailNumber} onChange={(v: any) => updateSetting('onlySailNumber', v)} />
-                                                            <Toggle label="ธงชาติ (Flag)" value={settings.showFlag} onChange={(v: any) => updateSetting('showFlag', v)} />
-                                                            <Toggle label="สถานะเรือ (Boat Condition)" value={settings.showBoatCondition} onChange={(v: any) => updateSetting('showBoatCondition', v)} />
-                                                            <Toggle label="รายละเอียดการแล่น (Sailing Details)" value={settings.showSailingDetails} onChange={(v: any) => updateSetting('showSailingDetails', v)} />
+                                                            <Toggle label="ชื่อทีม (Team Name)" value={settings.showTeamName} onChange={(v) => updateSetting('showTeamName', v)} />
+                                                            <Toggle label="แสดงเฉพาะเลขใบ (Only Sail Number)" value={settings.onlySailNumber} onChange={(v) => updateSetting('onlySailNumber', v)} />
+                                                            <Toggle label="ธงชาติ (Flag)" value={settings.showFlag} onChange={(v) => updateSetting('showFlag', v)} />
+                                                            <Toggle label="สถานะเรือ (Boat Condition)" value={settings.showBoatCondition} onChange={(v) => updateSetting('showBoatCondition', v)} />
+                                                            <Toggle label="รายละเอียดการแล่น (Sailing Details)" value={settings.showSailingDetails} onChange={(v) => updateSetting('showSailingDetails', v)} />
 
                                                             <div className="h-px bg-slate-200 my-2" />
 
-                                                            <Slider label="ขนาดไอคอน (Icon Size)" value={settings.iconSize} onChange={(v: any) => updateSetting('iconSize', v)} min={1} max={5} step={0.5} />
-                                                            <Toggle label="Default Display Rib" value={settings.defaultDisplayRib} onChange={(v: any) => updateSetting('defaultDisplayRib', v)} />
+                                                            <Slider label="ขนาดไอคอน (Icon Size)" value={settings.iconSize} onChange={(v) => updateSetting('iconSize', v)} min={1} max={5} step={0.5} />
+                                                            <Toggle label="Default Display Rib" value={settings.defaultDisplayRib} onChange={(v) => updateSetting('defaultDisplayRib', v)} />
                                                         </div>
                                                     </Tab.Panel>
 
@@ -210,18 +230,18 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tracking Setting</h4>
-                                                            <Select label="จุดติดตาม (Tracking Point)" value={settings.trackingPoint} onChange={(v: any) => updateSetting('trackingPoint', v)}
+                                                            <Select label="จุดติดตาม (Tracking Point)" value={settings.trackingPoint} onChange={(v) => updateSetting('trackingPoint', v)}
                                                                 options={[{ value: 'center', label: 'Center' }, { value: 'bow', label: 'Bow' }, { value: 'stern', label: 'Stern' }]} />
-                                                            <Select label="โหมดติดตาม (Tracking Mode)" value={settings.trackingMode} onChange={(v: any) => updateSetting('trackingMode', v)}
+                                                            <Select label="โหมดติดตาม (Tracking Mode)" value={settings.trackingMode} onChange={(v) => updateSetting('trackingMode', v)}
                                                                 options={[{ value: 'fixed', label: 'Fixed' }, { value: 'relative', label: 'Relative' }]} />
 
                                                             <div className="h-px bg-slate-200 my-2" />
 
-                                                            <Slider label="ความยาวหาง (Tracking Length)" value={settings.trailLength} onChange={(v: any) => updateSetting('trailLength', v)} min={0} max={300} unit="s" />
-                                                            <Slider label="ความกว้าง (Width)" value={settings.trailWidth} onChange={(v: any) => updateSetting('trailWidth', v)} min={1} max={10} />
-                                                            <Slider label="ความสว่าง (Brightness)" value={settings.trailBrightness} onChange={(v: any) => updateSetting('trailBrightness', v)} min={0.1} max={2} step={0.1} />
+                                                            <Slider label="ความยาวหาง (Tracking Length)" value={settings.trailLength} onChange={(v) => updateSetting('trailLength', v)} min={0} max={300} unit="s" />
+                                                            <Slider label="ความกว้าง (Width)" value={settings.trailWidth} onChange={(v) => updateSetting('trailWidth', v)} min={1} max={10} />
+                                                            <Slider label="ความสว่าง (Brightness)" value={settings.trailBrightness} onChange={(v) => updateSetting('trailBrightness', v)} min={0.1} max={2} step={0.1} />
 
-                                                            <Toggle label="Data Smoothing" value={settings.dataSmoothing} onChange={(v: any) => updateSetting('dataSmoothing', v)} />
+                                                            <Toggle label="Data Smoothing" value={settings.dataSmoothing} onChange={(v) => updateSetting('dataSmoothing', v)} />
                                                         </div>
                                                     </Tab.Panel>
 
@@ -229,11 +249,11 @@ export default function SettingsModal() {
                                                     <Tab.Panel className="space-y-4">
                                                         <div className="bg-slate-50 p-4 rounded-lg space-y-2">
                                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Reference Line Setting</h4>
-                                                            <Toggle label="พื้นที่ทุ่น (Mark Area)" value={settings.markArea} onChange={(v: any) => updateSetting('markArea', v)} />
-                                                            <Slider label="รัศมี (Radius)" value={settings.markAreaRadius} onChange={(v: any) => updateSetting('markAreaRadius', v)} min={10} max={200} unit="m" />
-                                                            <Toggle label="เส้นกลาง (Middle Line)" value={settings.middleLine} onChange={(v: any) => updateSetting('middleLine', v)} />
-                                                            <Toggle label="พื้นที่สามเหลี่ยม (Triangle Area)" value={settings.triangleArea} onChange={(v: any) => updateSetting('triangleArea', v)} />
-                                                            <Toggle label="พื้นที่จุดสตาร์ท (Start Area)" value={settings.startArea} onChange={(v: any) => updateSetting('startArea', v)} />
+                                                            <Toggle label="พื้นที่ทุ่น (Mark Area)" value={settings.markArea} onChange={(v) => updateSetting('markArea', v)} />
+                                                            <Slider label="รัศมี (Radius)" value={settings.markAreaRadius} onChange={(v) => updateSetting('markAreaRadius', v)} min={10} max={200} unit="m" />
+                                                            <Toggle label="เส้นกลาง (Middle Line)" value={settings.middleLine} onChange={(v) => updateSetting('middleLine', v)} />
+                                                            <Toggle label="พื้นที่สามเหลี่ยม (Triangle Area)" value={settings.triangleArea} onChange={(v) => updateSetting('triangleArea', v)} />
+                                                            <Toggle label="พื้นที่จุดสตาร์ท (Start Area)" value={settings.startArea} onChange={(v) => updateSetting('startArea', v)} />
                                                         </div>
                                                     </Tab.Panel>
                                                 </Tab.Panels>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useBoatStore } from '../../stores/useBoatStore';
 import { useCourseStore } from '../../stores/useCourseStore';
@@ -56,7 +57,7 @@ export default function CameraController() {
             const fovFactor = 0.6; // Tune this to fit padding
             const distance = (maxDim / 2) / fovFactor + 200; // +200 min distance
 
-            const glControls = controls as any;
+            const glControls = controls as unknown as OrbitControlsType;
             if (glControls) {
                 glControls.target.set(centerX, 0, centerZ);
                 camera.position.set(centerX, distance, centerZ + distance * 0.8); // Angled view
@@ -65,7 +66,7 @@ export default function CameraController() {
         };
 
         const handleZoom = (e: Event) => {
-            const glControls = controls as any;
+            const glControls = controls as unknown as OrbitControlsType;
             if (!glControls) return;
 
             const isZoomIn = e.type === 'map-zoom-in';
@@ -83,7 +84,7 @@ export default function CameraController() {
 
         const handleReset = () => {
             // Reset to 45 degree angle looking at current target (or 0,0,0 if none)
-            const glControls = controls as any;
+            const glControls = controls as unknown as OrbitControlsType;
             if (!glControls) return;
 
             const currentTarget = glControls.target.clone();
@@ -109,7 +110,7 @@ export default function CameraController() {
     // 2. Zoom & Snap Effect when boat changes
     useEffect(() => {
         const storeState = useBoatStore.getState();
-        const glControls = controls as any; // controls from useThree is the instance, not a ref
+        const glControls = controls as unknown as OrbitControlsType; // controls from useThree is the instance, not a ref
         const targetId = storeState.followingBoatId;
 
         if (targetId && storeState.boats[targetId] && glControls) {
@@ -150,7 +151,7 @@ export default function CameraController() {
 
     // 3. Follow Logic (Frame Update)
     useFrame((_state, delta) => {
-        const glControls = controls as any;
+        const glControls = controls as unknown as OrbitControlsType;
         frameCounter.current += 1;
         // const shouldLog = frameCounter.current % 60 === 0;
 
@@ -164,14 +165,16 @@ export default function CameraController() {
             // Calculate bounds (Cache this in ref for perf? iterating 4 points is fast enough)
             let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
             // Include Marks
-            course.marks.forEach((m: any) => {
-                const p = latLonToXZ(m.lat, m.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+            course.marks.forEach((m: unknown) => {
+                const mark = m as { lat: number; lon: number };
+                const p = latLonToXZ(mark.lat, mark.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
                 minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
                 minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
             });
             // Include Start/Finish
-            [...course.startLine, ...course.finishLine].forEach((m: any) => {
-                const p = latLonToXZ(m.lat, m.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
+            [...course.startLine, ...course.finishLine].forEach((m: unknown) => {
+                const mark = m as { lat: number; lon: number };
+                const p = latLonToXZ(mark.lat, mark.lon, DEFAULT_ORIGIN.lat, DEFAULT_ORIGIN.lon);
                 minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
                 minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
             });

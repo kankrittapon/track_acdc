@@ -25,11 +25,12 @@ export interface CourseData {
  * SSL R5 Roles: start_buoy_*, finish_buoy_*, buoy_1, buoy_2, buoy_3 (gate), buoy_4
  * Now supports laps config.
  */
-interface DeviceInput {
+export interface DeviceInput {
     id: string;
     lat: number;
     lon: number;
     role?: string;
+    teamId?: string;
 }
 
 /**
@@ -41,7 +42,7 @@ export function buildCourseFromDevices(devices: Record<string, DeviceInput>, lap
     // Start Line
     const startLeft = Object.values(devices).find(d => d.role === 'start_pin' || d.role === 'start_buoy_left');
     const startRight = Object.values(devices).find(d => d.role === 'start_boat' || d.role === 'start_buoy_right');
-    
+
     // Finish Line
     const finishLeft = Object.values(devices).find(d => d.role === 'finish_pin' || d.role === 'finish_buoy_left');
     const finishRight = Object.values(devices).find(d => d.role === 'finish_boat' || d.role === 'finish_buoy_right');
@@ -94,14 +95,14 @@ export function buildCourseFromDevices(devices: Record<string, DeviceInput>, lap
     // Sequence Generation
     // Standard W/L: Start -> 1 -> 1A -> 4 -> 1 -> 1A -> Finish
     const sequence: string[] = [];
-    
+
     // Check if we have main marks
     if (m1Id && m1aId && gateId) {
         for (let i = 0; i < laps; i++) {
             // Upwind
             sequence.push(m1Id);
             sequence.push(m1aId);
-            
+
             // Downwind
             if (i < laps - 1) {
                 // To Gate (if not last lap)

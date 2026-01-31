@@ -5,6 +5,7 @@ import { useBoatStore } from '../stores/useBoatStore';
 import type { BoatData } from '../stores/useBoatStore';
 import { useCourseStore } from '../stores/useCourseStore';
 import { buildCourseFromDevices } from '../lib/courseGenerator';
+import type { DeviceInput } from '../lib/courseGenerator';
 
 export default function TestOverlay() {
     const { isPlacementMode, placementRole, togglePlacementMode, localDevices, resetLocalDevices, laps, setLaps } = useTestStore();
@@ -15,9 +16,10 @@ export default function TestOverlay() {
     useEffect(() => {
         // 1. Separate Marks & Boats
         const boatsOnly: Record<string, BoatData> = {};
-        const markDevices: Record<string, any> = {};
+        const markDevices: Record<string, DeviceInput> = {};
 
-        Object.values(localDevices).forEach((d: any) => {
+        Object.values(localDevices).forEach((val) => {
+            const d = val as DeviceInput;
             const role = d.role || 'racing_boat';
             if (role === 'racing_boat') {
                 boatsOnly[d.id] = {
@@ -27,7 +29,7 @@ export default function TestOverlay() {
                     lastUpdated: Date.now()
                 } as BoatData;
             } else {
-                markDevices[d.id] = d;
+                markDevices[d.id] = d as DeviceInput;
             }
         });
 
@@ -53,10 +55,10 @@ export default function TestOverlay() {
         const devices = {
             'test-start-pin': { id: 'test-start-pin', role: 'start_pin', ...getPos(-50, -500), heading: 0, speed: 0 },
             'test-start-boat': { id: 'test-start-boat', role: 'start_boat', ...getPos(50, -500), heading: 0, speed: 0 },
-            
+
             'test-m1': { id: 'test-m1', role: 'buoy_1', ...getPos(0, 1000), heading: 0, speed: 0 },
             'test-m1a': { id: 'test-m1a', role: 'buoy_1a', ...getPos(-100, 1000), heading: 0, speed: 0 }, // Offset Left
-            
+
             'test-g4s': { id: 'test-g4s', role: 'gate_4s', ...getPos(50, 0), heading: 0, speed: 0 },
             'test-g4p': { id: 'test-g4p', role: 'gate_4p', ...getPos(-50, 0), heading: 0, speed: 0 },
 
@@ -71,12 +73,14 @@ export default function TestOverlay() {
 
     const clearField = () => {
         console.log('[TestOverlay] Clearing FIELD marks only (Keep Boats)...');
-        
+
         // Filter out marks
-        const boatsOnly: Record<string, any> = {};
-        Object.entries(localDevices).forEach(([id, d]: [string, any]) => {
-            if (d.role === 'racing_boat') {
-                boatsOnly[id] = d;
+        // Filter out marks
+        const boatsOnly: Record<string, BoatData> = {};
+        Object.entries(localDevices).forEach(([id, d]) => {
+            const device = d as BoatData;
+            if (device.role === 'racing_boat') {
+                boatsOnly[id] = device;
             }
         });
 
@@ -102,7 +106,7 @@ export default function TestOverlay() {
                     <button onClick={() => setLaps(laps + 1)} className="px-2 py-1 bg-slate-700 rounded hover:bg-slate-600">+</button>
                 </div>
             </div>
-            
+
             {/* Status */}
             {isPlacementMode && (
                 <div className="mb-4 bg-yellow-600/50 p-2 rounded text-sm text-center animate-pulse border border-yellow-500">
@@ -118,13 +122,13 @@ export default function TestOverlay() {
                 <div className="grid grid-cols-2 gap-2">
                     <button onClick={() => handleDragStart('buoy_1')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'buoy_1' ? 'bg-yellow-900/50 border-yellow-500' : 'bg-slate-800'}`}>🟡 Mark 1</button>
                     <button onClick={() => handleDragStart('buoy_1a')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'buoy_1a' ? 'bg-orange-900/50 border-orange-500' : 'bg-slate-800'}`}>🟠 Mark 1A</button>
-                    
+
                     <button onClick={() => handleDragStart('gate_4s')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'gate_4s' ? 'bg-green-900/50 border-green-500' : 'bg-slate-800'}`}>🟢 Gate 4S</button>
                     <button onClick={() => handleDragStart('gate_4p')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'gate_4p' ? 'bg-green-900/50 border-green-500' : 'bg-slate-800'}`}>🟢 Gate 4P</button>
 
                     <button onClick={() => handleDragStart('start_pin')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'start_pin' ? 'bg-orange-900/50 border-orange-500' : 'bg-slate-800'}`}>🚩 Start Pin</button>
                     <button onClick={() => handleDragStart('start_boat')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'start_boat' ? 'bg-green-900/50 border-green-500' : 'bg-slate-800'}`}>🚤 Start Boat</button>
-                    
+
                     <button onClick={() => handleDragStart('finish_pin')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'finish_pin' ? 'bg-blue-900/50 border-blue-500' : 'bg-slate-800'}`}>🏁 Finish Pin</button>
                     <button onClick={() => handleDragStart('finish_boat')} className={`p-2 rounded border border-slate-600 hover:bg-slate-800 text-xs flex items-center justify-center gap-2 ${placementRole === 'finish_boat' ? 'bg-blue-900/50 border-blue-500' : 'bg-slate-800'}`}>🏁 Finish Boat</button>
                 </div>
