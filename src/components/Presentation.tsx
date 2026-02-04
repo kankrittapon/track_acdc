@@ -23,7 +23,7 @@ interface SlideContent {
 }
 
 interface SlideItem {
-    icon?: JSX.Element;
+    icon?: React.ReactNode;
     label: string;
     description?: string;
 }
