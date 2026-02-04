@@ -14,8 +14,15 @@ import RaceControlBoard from './components/ui/RaceControlBoard';
 import PlaybackDriver from './components/logic/PlaybackDriver';
 
 
+import Presentation from './components/Presentation';
+
 function App() {
   const showScoreboard = useSettingsStore((s) => s.showScoreboard);
+
+  // Simple routing
+  if (window.location.pathname === '/presentation') {
+    return <Presentation />;
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
