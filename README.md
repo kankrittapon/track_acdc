@@ -1,73 +1,135 @@
-# React + TypeScript + Vite
+# 🎖️ Track ACDC - Antigravity GPS Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
 
-Currently, two official plugins are available:
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)
+![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**ระบบติดตาม GPS แบบ Real-time สำหรับการแข่งขันเรือใบ**
 
-## React Compiler
+*"Antigravity" - การเคลื่อนที่ที่ลื่นไหลเหมือนไร้แรงโน้มถ่วง*
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+</div>
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🗺️ แผนที่แบบ Real-time
+- แสดงตำแหน่งเรือแข่งแบบ Live บนแผนที่ CartoDB
+- ติดตามหลายลำพร้อมกันจาก Firebase
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🎖️ ไอคอนทหารจิ๋ว (Soldier Icon)
+- ไอคอนทหารสไตล์ Chibi แทนเรือแต่ละลำ
+- หมุนตามทิศทาง (Heading) แบบ Real-time
+- ป้ายชื่อทีมแสดงเหนือไอคอน
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 🌊 Antigravity Smoothing
+- **GPS Noise Filter** - ใช้ Simple Moving Average กรอง noise
+- **Heading Lock** - ล็อคทิศทางเมื่อความเร็วต่ำกว่า 0.5 knots
+- **Smooth Transitions** - การเคลื่อนที่ลื่นไหลด้วย CSS animations
+
+### 🚤 Boat Trail (Wake)
+- แสดงเส้นทางเดินเรือย้อนหลัง
+- เห็นภาพรวมการแข่งขันได้ชัดเจน
+
+### 📏 Ruler Tool
+- วัดระยะทางบนแผนที่
+- แสดงผลเป็น เมตร/กิโลเมตร
+
+### 🎬 Race Control
+- ระบบ Replay ดูย้อนหลัง
+- Auto Camera ซูมรวมทุกเรือ
+- เลือกห้องแข่งขันจาก Firebase
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm หรือ pnpm
+
+### Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/kankrittapon/track_acdc.git
+cd track_acdc
+
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+เปิด **http://localhost:5173** ในเบราว์เซอร์
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Test Mode
 ```
+http://localhost:5173/?test=true
+```
+ใช้ทดสอบโดยไม่ต้องเชื่อมต่อ Firebase
+
+---
+
+## 🏗️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 19 + TypeScript |
+| **Build** | Vite 7 |
+| **Map** | Leaflet + react-leaflet |
+| **State** | Zustand |
+| **Styling** | TailwindCSS 4 |
+| **Backend** | Firebase Realtime Database |
+| **3D** | React Three Fiber (optional) |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── map/          # Map2D, SoldierMarker
+│   ├── ui/           # Sidebar, RightMenu, Modals
+│   └── logic/        # PlaybackDriver
+├── lib/
+│   ├── gpsSmoothing.ts   # Antigravity smoothing logic
+│   ├── firebase.ts       # Firebase config
+│   └── geoUtils.ts       # Geographic utilities
+├── stores/
+│   ├── useBoatStore.ts   # Boat state
+│   ├── useRulerStore.ts  # Ruler tool state
+│   └── useCourseStore.ts # Course/race state
+└── App.tsx
+```
+
+---
+
+## 🎯 The "Antigravity" Principle
+
+ระบบนี้ถูกออกแบบตามหลัก **"Antigravity"** - ทำให้การแสดงผลการเคลื่อนที่ลื่นไหลที่สุด:
+
+1. **ไม่กระโดด** - Markers ไม่ teleport แม้ GPS จะมี noise
+2. **ไม่หมุนสุ่ม** - ล็อค heading เมื่อเรืออยู่นิ่ง
+3. **Smooth Transitions** - ทุกการเคลื่อนไหวมี animation
+
+---
+
+## 📄 License
+
+MIT License - Feel free to use and modify!
+
+---
+
+<div align="center">
+
+**Made with ❤️ for Sailing Competitions**
+
+</div>
