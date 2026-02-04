@@ -15,6 +15,7 @@ import {
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useBoatStore } from '../../stores/useBoatStore';
 import { useReplayStore } from '../../stores/useReplayStore';
+import { useRulerStore } from '../../stores/useRulerStore';
 
 export default function RightMenu() {
     const toggleScoreboard = useSettingsStore((s) => s.toggleScoreboard);
@@ -76,7 +77,7 @@ export default function RightMenu() {
 
             <div className="h-px w-6 bg-slate-300/50 my-2" />
 
-            <Btn icon={Ruler} label="ไม้บรรทัด" onClick={() => { }} />
+            <Btn icon={Ruler} label="ไม้บรรทัด" onClick={() => useRulerStore.getState().toggleRuler()} active={useRulerStore((s) => s.isActive)} />
             <Btn
                 icon={Users}
                 label="ทุกทีม"

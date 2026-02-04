@@ -8,6 +8,7 @@ import { useCourseStore } from '../stores/useCourseStore';
 import { buildCourseFromDevices } from '../lib/courseGenerator';
 import type { DeviceInput } from '../lib/courseGenerator';
 import { DEFAULT_ORIGIN } from '../lib/coordinates';
+import { smoothGPSData } from '../lib/gpsSmoothing';
 
 // Raw data interfaces from Firebase
 interface FirebaseDevice {
@@ -127,14 +128,25 @@ export default function DataController() {
                     const role = device.role || 'racing_boat';
 
                     if (role === 'racing_boat') {
-                        mappedBoats[id] = {
+                        // Apply Antigravity GPS smoothing
+                        const smoothed = smoothGPSData({
                             id,
                             lat,
                             lon,
                             speed,
                             heading,
+                        });
+
+                        mappedBoats[id] = {
+                            id,
+                            lat: smoothed.lat,
+                            lon: smoothed.lon,
+                            speed,
+                            heading: smoothed.heading,
                             team: device.teamId || id,
-                            lastUpdated: Date.now()
+                            lastUpdated: Date.now(),
+                            trail: smoothed.trail,
+                            isStationary: smoothed.isStationary,
                         };
                     } else {
                         markDevices[id] = {

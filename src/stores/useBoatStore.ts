@@ -10,6 +10,9 @@ export interface BoatData {
     flagUrl?: string; // Optional URL for country flag
     role?: string; // e.g. 'racing_boat' or 'buoy_1'
     lastUpdated: number;
+    // Antigravity additions
+    trail?: { lat: number; lon: number }[]; // Position history for wake
+    isStationary?: boolean; // True if speed < 0.5 knots
 }
 
 interface BoatStore {

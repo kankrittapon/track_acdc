@@ -9,3 +9,22 @@ body,
   padding: 0;
   overflow: hidden;
 }
+
+/* Antigravity: Smooth marker movement */
+.leaflet-marker-icon {
+  transition: transform 0.5s ease-out !important;
+}
+
+.soldier-marker {
+  transition: transform 0.3s ease-out;
+}
+
+.custom-boat-icon,
+.custom-mark-icon {
+  transition: transform 0.3s ease-out;
+}
+
+/* Ruler tool cursor */
+.leaflet-container.ruler-active {
+  cursor: crosshair !important;
+}
