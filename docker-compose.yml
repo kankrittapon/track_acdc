@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: track_acdc_app
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
