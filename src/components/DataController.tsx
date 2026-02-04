@@ -74,14 +74,10 @@ export default function DataController() {
             const unsubscribe = onValue(roomsRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    let latestRoom: RoomData | undefined = undefined;
                     const roomsMap = data as Record<string, RoomData>;
-
-                    Object.values(roomsMap).forEach((r) => {
-                        if (!latestRoom || (r.createdAt > latestRoom.createdAt)) {
-                            latestRoom = r;
-                        }
-                    });
+                    const latestRoom = Object.values(roomsMap).reduce((prev, curr) => {
+                        return (!prev || curr.createdAt > prev.createdAt) ? curr : prev;
+                    }, undefined as RoomData | undefined);
 
                     if (latestRoom) {
                         setRaceName(latestRoom.name);
