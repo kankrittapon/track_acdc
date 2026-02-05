@@ -32,7 +32,7 @@ export default function Sidebar() {
                 {sortedBoats.map((boat) => {
                     const isSelected = selectedBoatId === boat.id;
                     const isFollowing = followingBoatId === boat.id;
-                    const colorClass = TEAM_COLORS[boat.team] || 'bg-gray-400';
+                    const colorClass = TEAM_COLORS[boat.team] || 'bg-cyan-500';
 
                     // Check Offline Status (> 10 seconds silence)
                     const timeSinceLastPacket = Date.now() - (boat.lastPacketTime || boat.lastUpdated);
