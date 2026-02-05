@@ -15,6 +15,7 @@ import PlaybackDriver from './components/logic/PlaybackDriver';
 
 
 import Presentation from './components/Presentation';
+import Flowchart from './components/Flowchart';
 
 function App() {
   const showScoreboard = useSettingsStore((s) => s.showScoreboard);
@@ -22,6 +23,9 @@ function App() {
   // Simple routing
   if (window.location.pathname === '/presentation') {
     return <Presentation />;
+  }
+  if (window.location.pathname === '/flowchart') {
+    return <Flowchart />;
   }
 
   useEffect(() => {

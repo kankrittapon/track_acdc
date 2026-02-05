@@ -45,7 +45,7 @@ interface Slide {
 const slides: Slide[] = [
     {
         title: "Track ACDC",
-        subtitle: "ระบบอำนวยการยุทธ์และติดตามพิกัดทางทหาร",
+        subtitle: "โปรแกรมแสดงสถานะตำบลที่หน่วยสื่อสารทางยุทธวิธีในสนามรบ",
         type: "title",
         content: {
             mission: "ระบบติดตามตำแหน่งแบบ Real-time ที่ออกแบบมาเพื่อความแม่นยำทางยุทธวิธี สูงสุดเห็นทุกความเคลื่อนไหวในสนามรบอย่างชัดเจน",
@@ -295,9 +295,14 @@ export default function Presentation() {
             </div>
 
             {/* Shortcuts Help */}
-            <div className="mt-8 text-slate-600 text-xs flex gap-6 font-mono opacity-50">
-                <span className="flex items-center gap-1">NAVIGATE: [ARROW KEYS] / [SPACE]</span>
-                <span className="flex items-center gap-1">MODE: PRESENTATION</span>
+            <div className="mt-8 text-slate-600 text-xs flex gap-6 font-mono opacity-50 justify-between w-full max-w-5xl">
+                <div className="flex gap-6">
+                    <span className="flex items-center gap-1">NAVIGATE: [ARROW KEYS] / [SPACE]</span>
+                    <span className="flex items-center gap-1">MODE: PRESENTATION</span>
+                </div>
+                <a href="/flowchart" className="flex items-center gap-2 hover:text-blue-400 transition-colors cursor-pointer z-50 pointer-events-auto">
+                    SYSTEM FLOWCHART →
+                </a>
             </div>
         </div>
     );
