@@ -39,14 +39,14 @@ export default function Flowchart() {
                                     <Smartphone className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg leading-tight">Field Unit App</h3>
-                                    <p className="text-xs text-slate-400 mt-1">Android (Kotlin)</p>
+                                    <h3 className="font-bold text-lg leading-tight">หน่วยภาคสนาม</h3>
+                                    <p className="text-xs text-slate-400 mt-1">Field Unit</p>
                                 </div>
                             </div>
                             <ul className="text-sm text-slate-300 space-y-3 list-disc list-inside flex-1">
-                                <li><strong>FusedLocationProvider</strong><br /><span className="text-xs text-slate-500 ml-4">รับค่า GPS (Lat/Lon)</span></li>
-                                <li>แปลง Speed (m/s → Knots)</li>
-                                <li>ส่งตรงขึ้น Firebase RTDB</li>
+                                <li>รับสัญญาณดาวเทียม (GPS)<br /><span className="text-xs text-slate-500 ml-4">ระบุพิกัดตำแหน่ง</span></li>
+                                <li>คำนวณความเร็วและทิศทาง</li>
+                                <li>ส่งข้อมูลผ่าน Internet </li>
                             </ul>
                         </div>
                         <div className="flex-1 min-h-[40px] border-l-2 border-dashed border-slate-700 ml-8 lg:hidden"></div>
@@ -54,7 +54,7 @@ export default function Flowchart() {
 
                     {/* Arrow 1 */}
                     <div className="hidden lg:flex flex-col items-center justify-center text-slate-600 px-2 shrink-0">
-                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">JSON / Internet</div>
+                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">Online</div>
                         <div className="w-16 h-0.5 bg-slate-700 relative">
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t-2 border-r-2 border-slate-700 rotate-45"></div>
                         </div>
@@ -69,14 +69,14 @@ export default function Flowchart() {
                                     <Database className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg leading-tight">Firebase RTDB</h3>
-                                    <p className="text-xs text-slate-400 mt-1">Google Cloud (SG)</p>
+                                    <h3 className="font-bold text-lg leading-tight">ระบบคลาวด์กลาง</h3>
+                                    <p className="text-xs text-slate-400 mt-1">Cloud Server</p>
                                 </div>
                             </div>
                             <ul className="text-sm text-slate-300 space-y-3 list-disc list-inside flex-1">
-                                <li>Path: <code className="bg-slate-900 px-1 py-0.5 rounded text-xs">devices/&#123;id&#125;/location</code></li>
-                                <li>เก็บ Lat, Lon, Speed, Heading</li>
-                                <li>รองรับ Real-time Listener</li>
+                                <li>รวบรวมข้อมูลจากทุกหน่วย</li>
+                                <li>บันทึกประวัติการเดินทาง</li>
+                                <li>สำรองข้อมูลอัตโนมัติ</li>
                             </ul>
                         </div>
                         <div className="flex-1 min-h-[40px] border-l-2 border-dashed border-slate-700 ml-8 lg:hidden"></div>
@@ -84,7 +84,7 @@ export default function Flowchart() {
 
                     {/* Arrow 2 */}
                     <div className="hidden lg:flex flex-col items-center justify-center text-slate-600 px-2 shrink-0">
-                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">Sync Event</div>
+                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">Sync</div>
                         <div className="w-16 h-0.5 bg-slate-700 relative">
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t-2 border-r-2 border-slate-700 rotate-45"></div>
                         </div>
@@ -99,18 +99,18 @@ export default function Flowchart() {
                                     <Server className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg leading-tight">Client Engine</h3>
-                                    <p className="text-xs text-slate-400 mt-1">Browser / App</p>
+                                    <h3 className="font-bold text-lg leading-tight">ระบบประมวลผล</h3>
+                                    <p className="text-xs text-slate-400 mt-1">Processing Unit</p>
                                 </div>
                             </div>
                             <div className="space-y-3 flex-1">
                                 <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 text-xs">
-                                    <div className="text-cyan-400 font-bold mb-1">Smart Filter (SMA)</div>
-                                    <div className="text-slate-400">กรอง Noise ข้อมูล GPS ให้นิ่ง</div>
+                                    <div className="text-cyan-400 font-bold mb-1">กรองสัญญาณรบกวน</div>
+                                    <div className="text-slate-400">เพื่อให้พิกัดนิ่งและแม่นยำที่สุด</div>
                                 </div>
                                 <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 text-xs">
-                                    <div className="text-cyan-400 font-bold mb-1">Heading Lock</div>
-                                    <div className="text-slate-400">ล็อคทิศเมื่อหยุดนิ่ง ({'<'} 0.5kts)</div>
+                                    <div className="text-cyan-400 font-bold mb-1">คำนวณทิศทาง</div>
+                                    <div className="text-slate-400">ปรับหัวลูกศรให้ตรงตามจริง</div>
                                 </div>
                             </div>
                         </div>
@@ -119,7 +119,7 @@ export default function Flowchart() {
 
                     {/* Arrow 3 */}
                     <div className="hidden lg:flex flex-col items-center justify-center text-slate-600 px-2 shrink-0">
-                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">Render</div>
+                        <div className="text-[10px] font-mono mb-2 uppercase tracking-wider text-slate-500">Display</div>
                         <div className="w-16 h-0.5 bg-slate-700 relative">
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t-2 border-r-2 border-slate-700 rotate-45"></div>
                         </div>
@@ -134,14 +134,14 @@ export default function Flowchart() {
                                     <Globe className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg leading-tight text-emerald-100">Tactical Map</h3>
-                                    <p className="text-xs text-emerald-400/70 mt-1">Command Center</p>
+                                    <h3 className="font-bold text-lg leading-tight text-emerald-100">แผนที่ยุทธวิธี</h3>
+                                    <p className="text-xs text-emerald-400/70 mt-1">Tactical Map</p>
                                 </div>
                             </div>
                             <ul className="text-sm text-emerald-100/70 space-y-3 list-disc list-inside flex-1">
-                                <li>แสดงผลบนแผนที่ CartoDB Tiles</li>
-                                <li>Soldier Markers <span className="text-xs opacity-50">(หมุนตามทิศจริง)</span></li>
-                                <li>ระบบวัดระยะและ Replay</li>
+                                <li>แสดงตำแหน่งบนแผนที่จริง</li>
+                                <li>ติดตามความเคลื่อนไหวสด</li>
+                                <li>วัดระยะทางและดูย้อนหลัง</li>
                             </ul>
                         </div>
                     </div>
