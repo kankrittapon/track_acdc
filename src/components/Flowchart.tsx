@@ -5,7 +5,7 @@ export default function Flowchart() {
         <div className="min-h-screen bg-slate-950 text-slate-100 p-8 flex flex-col items-center">
 
             {/* Header */}
-            <div className="w-full max-w-6xl flex items-center justify-between mb-12 border-b border-slate-800 pb-6">
+            <div className="w-full max-w-[95%] xl:max-w-7xl flex items-center justify-between mb-8 border-b border-slate-800 pb-6">
                 <div className="flex items-center gap-4">
                     <a href="/presentation" className="p-2 hover:bg-slate-900 rounded-full transition-colors text-slate-400 hover:text-white">
                         <ArrowLeft className="w-6 h-6" />
@@ -23,15 +23,15 @@ export default function Flowchart() {
             </div>
 
             {/* Diagram Container */}
-            <div className="relative w-full max-w-6xl bg-slate-900/50 rounded-3xl p-12 border border-slate-800 shadow-2xl overflow-hidden">
+            <div className="relative w-full max-w-[95%] xl:max-w-7xl bg-slate-900/50 rounded-3xl p-6 lg:p-12 border border-slate-800 shadow-2xl overflow-x-auto">
 
                 {/* Background Grid */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none bg-[size:40px_40px] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]"></div>
 
-                <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-stretch justify-between">
+                <div className="relative z-10 flex flex-col lg:flex-row gap-4 items-stretch justify-between min-w-[1000px] lg:min-w-0">
 
                     {/* Step 1: Source */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-[240px]">
+                    <div className="flex-1 flex flex-col gap-4 min-w-[200px]">
                         <div className="p-6 bg-slate-800 rounded-2xl border border-slate-700 relative group h-full flex flex-col shadow-lg hover:shadow-blue-900/20 transition-all hover:-translate-y-1">
                             <div className="absolute -top-3 -left-3 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg ring-4 ring-slate-950 z-10">1</div>
                             <div className="flex items-center gap-4 mb-4 border-b border-slate-700/50 pb-4">
@@ -61,7 +61,7 @@ export default function Flowchart() {
                     </div>
 
                     {/* Step 2: Database */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-[240px]">
+                    <div className="flex-1 flex flex-col gap-4 min-w-[200px]">
                         <div className="p-6 bg-slate-800 rounded-2xl border border-slate-700 relative group h-full flex flex-col shadow-lg hover:shadow-purple-900/20 transition-all hover:-translate-y-1">
                             <div className="absolute -top-3 -left-3 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg ring-4 ring-slate-950 z-10">2</div>
                             <div className="flex items-center gap-4 mb-4 border-b border-slate-700/50 pb-4">
@@ -91,7 +91,7 @@ export default function Flowchart() {
                     </div>
 
                     {/* Step 3: Processing */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-[240px]">
+                    <div className="flex-1 flex flex-col gap-4 min-w-[200px]">
                         <div className="p-6 bg-slate-800 rounded-2xl border border-slate-700 relative group h-full flex flex-col shadow-lg hover:shadow-cyan-900/20 transition-all hover:-translate-y-1">
                             <div className="absolute -top-3 -left-3 w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg ring-4 ring-slate-950 z-10">3</div>
                             <div className="flex items-center gap-4 mb-4 border-b border-slate-700/50 pb-4">
@@ -126,7 +126,7 @@ export default function Flowchart() {
                     </div>
 
                     {/* Step 4: Display */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-[240px]">
+                    <div className="flex-1 flex flex-col gap-4 min-w-[200px]">
                         <div className="p-6 bg-emerald-900/20 border border-emerald-500/30 rounded-2xl relative group shadow-[0_0_30px_rgba(16,185,129,0.1)] h-full flex flex-col hover:shadow-emerald-900/40 transition-all hover:-translate-y-1">
                             <div className="absolute -top-3 -left-3 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg ring-4 ring-slate-950 z-10">4</div>
                             <div className="flex items-center gap-4 mb-4 border-b border-emerald-500/20 pb-4">
