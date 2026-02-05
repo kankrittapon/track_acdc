@@ -34,6 +34,10 @@ export default function Sidebar() {
                     const isFollowing = followingBoatId === boat.id;
                     const colorClass = TEAM_COLORS[boat.team] || 'bg-gray-400';
 
+                    // Check Offline Status (> 10 seconds silence)
+                    const timeSinceLastPacket = Date.now() - (boat.lastPacketTime || boat.lastUpdated);
+                    const isOffline = timeSinceLastPacket > 10000;
+
                     return (
                         <div
                             key={boat.id}
@@ -45,8 +49,11 @@ export default function Sidebar() {
                         >
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-3 h-3 rounded-full ${colorClass}`} />
-                                    <span className="font-bold">{boat.id}</span>
+                                    <div className={`w-3 h-3 rounded-full ${isOffline ? 'bg-slate-500' : colorClass}`} />
+                                    <span className={`font-bold ${isOffline ? 'text-slate-500' : 'text-white'}`}>
+                                        {boat.id}
+                                        {isOffline && <span className="ml-2 text-[10px] uppercase text-red-500 bg-red-500/10 px-1 rounded">Offline</span>}
+                                    </span>
                                 </div>
                                 <span className="font-mono text-sm text-cyan-400">
                                     {boat.speed.toFixed(1)} kn

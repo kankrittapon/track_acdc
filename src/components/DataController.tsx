@@ -140,6 +140,7 @@ export default function DataController() {
                         heading: smoothed.heading,
                         team: device.teamId || id,
                         lastUpdated: Date.now(),
+                        lastPacketTime: device.location?.timestamp || Date.now(),
                         trail: smoothed.trail,
                         isStationary: smoothed.isStationary,
                     };
