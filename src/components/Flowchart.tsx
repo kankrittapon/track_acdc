@@ -39,14 +39,14 @@ export default function Flowchart() {
                                     <Smartphone className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg">Data Source</h3>
-                                    <p className="text-xs text-slate-400">Field Units / Sensors</p>
+                                    <h3 className="font-bold text-lg">Field Unit App</h3>
+                                    <p className="text-xs text-slate-400">Android (Kotlin)</p>
                                 </div>
                             </div>
                             <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside">
-                                <li>รับพิกัด GPS (Lat, Lon)</li>
-                                <li>คำนวณ Speed & Heading เบื้องต้น</li>
-                                <li>ส่งข้อมูลผ่าน Internet / Radio</li>
+                                <li><strong>FusedLocationProvider</strong> รับค่า GPS (Lat/Lon)</li>
+                                <li>แปลง Speed (m/s → Knots)</li>
+                                <li>ส่งตรงขึ้น Firebase RTDB ผาน Internet</li>
                             </ul>
                         </div>
                         <div className="flex-1 min-h-[40px] border-l-2 border-dashed border-slate-700 ml-8 lg:hidden"></div>
@@ -54,7 +54,7 @@ export default function Flowchart() {
 
                     {/* Arrow 1 */}
                     <div className="hidden lg:flex flex-col items-center justify-center text-slate-600">
-                        <div className="text-xs font-mono mb-2">JSON / MQTT</div>
+                        <div className="text-xs font-mono mb-2">JSON via Internet</div>
                         <div className="w-12 h-0.5 bg-slate-700 relative">
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 border-t-2 border-r-2 border-slate-700 rotate-45"></div>
                         </div>
@@ -69,14 +69,14 @@ export default function Flowchart() {
                                     <Database className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg">Central DB</h3>
-                                    <p className="text-xs text-slate-400">Firebase Realtime</p>
+                                    <h3 className="font-bold text-lg">Firebase RTDB</h3>
+                                    <p className="text-xs text-slate-400">Google Cloud (Singapore)</p>
                                 </div>
                             </div>
                             <ul className="text-sm text-slate-300 space-y-2 list-disc list-inside">
-                                <li>Sync ข้อมูลแบบ Real-time</li>
-                                <li>จัดเก็บ History (Trajectory)</li>
-                                <li>จัดการ Authentication rule</li>
+                                <li>Path: <code>devices/&#123;id&#125;/location</code></li>
+                                <li>เก็บ Lat, Lon, Speed, Heading, Timestamp</li>
+                                <li>รองรับ Real-time Listener (WebSocket)</li>
                             </ul>
                         </div>
                         <div className="flex-1 min-h-[40px] border-l-2 border-dashed border-slate-700 ml-8 lg:hidden"></div>
