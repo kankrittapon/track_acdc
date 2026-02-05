@@ -20,10 +20,10 @@ export default function Sidebar() {
             {/* Header */}
             <div className="p-4 border-b border-slate-700 bg-slate-800/50">
                 <h2 className="text-lg font-bold flex items-center gap-2">
-                    <span>⛵</span> Race Control
+                    <span>📡</span> Tactical Operation Center
                 </h2>
                 <div className="text-xs text-slate-400 mt-1">
-                    {sortedBoats.length} Boats Online
+                    {sortedBoats.length} Units Online
                 </div>
             </div>
 

@@ -5,7 +5,7 @@
 
 // ค่าคงที่
 const HISTORY_SIZE = 5; // จำนวนพิกัดที่เก็บสำหรับ SMA
-const TRAIL_SIZE = 20; // จำนวนจุดสำหรับ trail
+const TRAIL_SIZE = 300; // จำนวนจุดสำหรับ trail
 const STATIONARY_SPEED_THRESHOLD = 0.5; // knots - ต่ำกว่านี้ถือว่านิ่ง
 
 // เก็บประวัติพิกัดของแต่ละเรือ
