@@ -34,9 +34,13 @@ export default function Sidebar() {
                     const isFollowing = followingBoatId === boat.id;
                     const colorClass = TEAM_COLORS[boat.team] || 'bg-cyan-500';
 
-                    // Check Offline Status (> 10 seconds silence)
+                    // Check Offline Status
+                    // Priority 1: Use Firebase 'status' field if available
+                    // Priority 2: Fallback to timeout (> 10s) if status is missing/unknown
                     const timeSinceLastPacket = Date.now() - (boat.lastPacketTime || boat.lastUpdated);
-                    const isOffline = timeSinceLastPacket > 10000;
+                    const isTimedOut = timeSinceLastPacket > 10000;
+
+                    const isOffline = boat.status ? boat.status === 'offline' : isTimedOut;
 
                     return (
                         <div

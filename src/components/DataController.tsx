@@ -28,6 +28,7 @@ interface FirebaseDevice {
     role?: string;
     roomId?: string;
     timestamp?: number;
+    status?: string;
     // ... other raw fields
 }
 
@@ -142,6 +143,7 @@ export default function DataController() {
                         team: device.teamId || id,
                         lastUpdated: Date.now(),
                         lastPacketTime: device.location?.timestamp || device.timestamp || 0,
+                        status: device.status,
                         trail: smoothed.trail,
                         isStationary: smoothed.isStationary,
                     };

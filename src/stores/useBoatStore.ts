@@ -11,6 +11,7 @@ export interface BoatData {
     role?: string; // e.g. 'racing_boat' or 'buoy_1'
     lastUpdated: number;
     lastPacketTime?: number; // Remote timestamp from device
+    status?: string; // 'online' | 'offline' from Firebase
     // Antigravity additions
     trail?: { lat: number; lon: number }[]; // Position history for wake
     isStationary?: boolean; // True if speed < 0.5 knots
